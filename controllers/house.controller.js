@@ -1,15 +1,13 @@
-import Resident from "../models/Resident.js";
+import House from "../models/House.js";
 
 export const create = (req, res) => {
-  const newResident = new Resident({
-    fullname: req.body.fullname,
-    ktp: req.file ? req.file.buffer : null,
-    phone: req.body.phone,
+  const newHouse = new House({
+    fullname: req.body.resident_id,
     status: req.body.status,
-    marital_status: req.body.marital_status,
+    address: req.body.address,
   });
 
-  Resident.create(newResident, (err, data) => {
+  House.create(newHouse, (err, data) => {
     if (err) {
       console.log(err);
       throw { type: "internal_error" };
@@ -19,7 +17,7 @@ export const create = (req, res) => {
 };
 
 export const getAll = (req, res) => {
-  Resident.getAll((err, data) => {
+  House.getAll((err, data) => {
     if (err) {
       console.log(err);
       throw { type: "internal_error" };
@@ -29,13 +27,13 @@ export const getAll = (req, res) => {
 };
 
 export const findOne = (req, res) => {
-  Resident.findById(req.params.id, (err, data) => {
+  House.findById(req.params.id, (err, data) => {
     if (err) {
       if (err.type === "not_found") {
         res.status(404).send({
-          message: `Not found resident with id : ${req.params.id}`,
+          message: `Not found house with id : ${req.params.id}`,
         });
-        throw { type: "Resident_Not_Found" };
+        throw { type: "House_Not_Found" };
       } else {
         throw { type: "internal_error" };
       }
@@ -47,21 +45,19 @@ export const findOne = (req, res) => {
 
 export const update = (req, res) => {
   const updatedData = {
-    fullname: req.body.fullname,
-    ktp: req.file ? req.file.buffer : undefined,
-    phone: req.body.phone,
+    resident_id: req.body.resident_id,
     status: req.body.status,
-    marital_status: req.body.marital_status,
+    address: req.body.address,
   };
 
   Object.keys(updatedData).forEach(
     (key) => updatedData[key] === undefined && delete updatedData[key]
   );
 
-  Resident.update(req.params.id, updatedData, (err, data) => {
+  House.update(req.params.id, updatedData, (err, data) => {
     if (err) {
       if (err.type === "not_found") {
-        throw { type: "Resident_Not_Found" };
+        throw { type: "House_Not_Found" };
       } else {
         console.log(err);
         throw { type: "internal_error" };

@@ -1,6 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import connection from "./models/connection.js";
+import residentRoute from "./routes/resident.route.js";
+import houseRoute from "./routes/house.route.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
 dotenv.config();
@@ -11,6 +14,9 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.json({ msg: "Welcome to My Web App" });
 });
+app.use("/resident", residentRoute);
+app.use("/house", houseRoute);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 

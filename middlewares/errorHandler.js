@@ -11,6 +11,10 @@ const errorHandler = (err, req, res, next) => {
       statusCode = 404;
       message = "There are no residents with the requested id";
       break;
+    case "House_Not_Found":
+      statusCode = 404;
+      message = "There are no house with the requested id";
+      break;
     default:
       statusCode = 500;
       message = "Internal server error";

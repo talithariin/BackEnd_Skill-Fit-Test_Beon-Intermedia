@@ -15,6 +15,6 @@ const residentRoute = Router();
 residentRoute.get("/", getAll);
 residentRoute.post("/", upload.single("ktp"), validateResidentSchema, create);
 residentRoute.get("/:id", findOne);
-residentRoute.put("/:id", upload.single("ktp"), validateResidentSchema, update);
+residentRoute.put("/:id", upload.single("ktp"), update);
 
 export default residentRoute;

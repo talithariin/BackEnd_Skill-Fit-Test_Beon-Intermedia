@@ -13,3 +13,16 @@ export const validateResidentSchema = async (req, res, next) => {
     res.status(400).json({ errors: error.errors });
   }
 };
+
+export const houseSchema = yup.object().shape({
+  address: yup.string().required("address is required"),
+});
+
+export const validateHouseSchema = async (req, res, next) => {
+  try {
+    await houseSchema.validate(req.body, { abortEarly: false });
+    next();
+  } catch (error) {
+    res.status(400).json({ errors: error.errors });
+  }
+};
