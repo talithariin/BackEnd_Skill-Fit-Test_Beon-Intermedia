@@ -15,16 +15,30 @@ HouseResident.create = (newHouseResident, result) => {
   const { house_id, resident_id, startdate, enddate } = newHouseResident;
   console.log("Data to be entered:", newHouseResident);
 
+  const values = [house_id, resident_id, startdate, enddate || null];
+
   sql.query(
     `INSERT INTO ${tableName} (house_id, resident_id, startdate, enddate) VALUES (?, ?, ?, ?)`,
-    [house_id, resident_id, startdate, enddate],
+    values,
     (err, res) => {
       if (err) {
         console.log("Error while querying:", err);
         result(err, null);
       } else {
         console.log("Data is successfully entered:", res);
-        result(null, { id: res.insertId, ...newHouseResident });
+
+        const updateQuery = `UPDATE Houses SET resident_id = ?, status = 'occupied' WHERE id = ?`;
+        const updateValues = [resident_id, house_id];
+
+        sql.query(updateQuery, updateValues, (updateErr, updateRes) => {
+          if (updateErr) {
+            console.log("Error while updating Houses:", updateErr);
+            result(updateErr, null);
+          } else {
+            console.log("Houses table updated successfully:", updateRes);
+            result(null, { id: res.insertId, ...newHouseResident });
+          }
+        });
       }
     }
   );
@@ -55,7 +69,7 @@ HouseResident.update = (id, updatedData, result) => {
 HouseResident.findByHouseId = (houseId, result) => {
   sql.query(
     `SELECT * FROM ${tableName} WHERE house_id = ?`,
-    houseId,
+    [houseId],
     async (err, res) => {
       if (err) {
         console.log("Error while querying:", err);

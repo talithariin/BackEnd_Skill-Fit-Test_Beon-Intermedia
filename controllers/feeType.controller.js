@@ -56,3 +56,20 @@ export const update = (req, res, next) => {
     }
   });
 };
+
+export const findOne = (req, res, next) => {
+  FeeType.findById(req.params.id, (err, data) => {
+    if (err) {
+      if (err.type === "not_found") {
+        res.status(404).send({
+          message: `Not found fee type with id : ${req.params.id}`,
+        });
+        next(new Error("FeeType_Not_Found"));
+      } else {
+        next(new Error("internal_error"));
+      }
+    } else {
+      res.send(data);
+    }
+  });
+};

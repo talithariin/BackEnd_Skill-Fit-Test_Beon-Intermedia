@@ -2,7 +2,7 @@ import House from "../models/House.js";
 
 export const create = (req, res, next) => {
   const newHouse = new House({
-    fullname: req.body.resident_id,
+    resident_id: req.body.resident_id,
     status: req.body.status,
     address: req.body.address,
   });

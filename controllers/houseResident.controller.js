@@ -2,7 +2,7 @@ import HouseResident from "../models/HouseResident.js";
 import House from "../models/House.js";
 import Resident from "../models/Resident.js";
 
-export const create = (req, res, next) => {
+export const create = async (req, res, next) => {
   const newHouseResident = new HouseResident({
     house_id: req.body.house_id,
     resident_id: req.body.resident_id,
@@ -10,13 +10,41 @@ export const create = (req, res, next) => {
     enddate: req.body.enddate,
   });
 
-  HouseResident.create(newHouseResident, (err, data) => {
-    if (err) {
-      console.log(err);
-      next(new Error("internal_error"));
-    }
-    res.send(data);
-  });
+  try {
+    // Check if house_id exists
+    const houseExists = await new Promise((resolve, reject) => {
+      House.findById(newHouseResident.house_id, (err, data) => {
+        if (err || !data) {
+          reject(new Error("House_Not_Found"));
+        } else {
+          resolve(data);
+        }
+      });
+    });
+
+    // Check if resident_id exists
+    const residentExists = await new Promise((resolve, reject) => {
+      Resident.findById(newHouseResident.resident_id, (err, data) => {
+        if (err || !data) {
+          reject(new Error("Resident_Not_Found"));
+        } else {
+          resolve(data);
+        }
+      });
+    });
+
+    // If both exist, create the HouseResident record
+    HouseResident.create(newHouseResident, (err, data) => {
+      if (err) {
+        console.log(err);
+        next(new Error("internal_error"));
+      } else {
+        res.send(data);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const update = async (req, res, next) => {

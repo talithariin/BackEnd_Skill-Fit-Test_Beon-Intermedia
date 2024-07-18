@@ -34,12 +34,12 @@ export const validateHouseSchema = async (req, res, next) => {
 export const houseResidentSchema = yup.object().shape({
   resident_id: yup
     .number()
-    .integer("resident_id must be a number")
-    .required("resident_id is required"),
+    .integer("resident id must be a number")
+    .required("resident id is required"),
   house_id: yup
     .number()
-    .integer("house_id must be a number")
-    .required("house_id is required"),
+    .integer("house id must be a number")
+    .required("house id is required"),
   startdate: yup.date().required("startdate is required"),
 });
 
@@ -70,6 +70,87 @@ export const feeTypeSchema = yup.object().shape({
 export const validateFeeTypeSchema = async (req, res, next) => {
   try {
     await feeTypeSchema.validate(req.body, { abortEarly: false });
+    next();
+  } catch (error) {
+    res.status(400).json({ errors: error.errors });
+  }
+};
+
+export const paymentSchema = yup.object().shape({
+  resident_id: yup
+    .number()
+    .integer("resident id must be a number")
+    .required("resident id is required"),
+  house_id: yup
+    .number()
+    .integer("house id must be a number")
+    .required("house id is required"),
+  fee_type_id: yup
+    .number()
+    .integer("fee type id must be a number")
+    .required("fee type id is required"),
+  payment_date: yup
+    .date()
+    .typeError("payment date must be a valid date")
+    .required("payment date is required"),
+  period: yup
+    .string()
+    .oneOf(
+      ["once", "monthly", "yearly"],
+      "period must be one of: once, monthly, yearly"
+    )
+    .required("period is required"),
+  amount: yup
+    .number()
+    .integer("amount must be a number")
+    .required("amount is required"),
+});
+
+export const validatePaymentSchema = async (req, res, next) => {
+  try {
+    await paymentSchema.validate(req.body, { abortEarly: false });
+    next();
+  } catch (error) {
+    res.status(400).json({ errors: error.errors });
+  }
+};
+
+export const incomeSchema = yup.object().shape({
+  payment_id: yup
+    .number()
+    .integer("payment id must be a number")
+    .required("payment id is required"),
+  fee_type_id: yup
+    .number()
+    .integer("fee type id must be a number")
+    .required("fee type id is required"),
+  total: yup
+    .number()
+    .integer("total must be a number")
+    .required("total is required"),
+});
+
+export const validateIncomeSchema = async (req, res, next) => {
+  try {
+    await incomeSchema.validate(req.body, { abortEarly: false });
+    next();
+  } catch (error) {
+    res.status(400).json({ errors: error.errors });
+  }
+};
+
+export const expenseSchema = yup.object().shape({
+  description: yup.string().required("Description is required"),
+  expense_date: yup.date().required("Expense date is required"),
+  amount: yup
+    .number()
+    .integer("Amount must be a number")
+    .required("Amount is required"),
+});
+
+export const validateExpenseSchema = async (req, res, next) => {
+  try {
+    await expenseSchema.validate(req.body, { abortEarly: false });
     next();
   } catch (error) {
     res.status(400).json({ errors: error.errors });

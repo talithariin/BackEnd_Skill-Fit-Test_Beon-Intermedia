@@ -1,4 +1,5 @@
 import sql from "./connection.js";
+import Payment from "./Payment.js";
 
 const FeeType = function (feeType) {
   this.name = feeType.name;
@@ -15,13 +16,56 @@ FeeType.create = (newFeeType, result) => {
   sql.query(
     `INSERT INTO ${tableName} (name, amount, frequency) VALUES (?, ?, ?)`,
     [name, amount, frequency],
-    (err, res) => {
+    async (err, res) => {
       if (err) {
         console.log("Error while querying:", err);
         result(err, null);
       } else {
         console.log("Data is successfully entered:", res);
         result(null, { id: res.insertId, ...newFeeType });
+
+        try {
+          // Ambil semua rumah dengan status occupied
+          const houses = await new Promise((resolve, reject) => {
+            sql.query(
+              "SELECT * FROM Houses WHERE status = 'occupied'",
+              (err, houses) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(houses);
+                }
+              }
+            );
+          });
+
+          // Buat payment untuk setiap rumah yang occupied
+          const paymentPromises = houses.map((house) => {
+            const newPayment = new Payment({
+              resident_id: house.resident_id,
+              fee_type_id: res.insertId,
+              house_id: house.id,
+              payment_date: null,
+              period: null,
+              status: "unpaid",
+              amount: "0",
+              description: null,
+            });
+
+            return new Promise((resolve, reject) => {
+              Payment.create(newPayment, (err, payment) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(payment);
+                }
+              });
+            });
+          });
+          await Promise.all(paymentPromises);
+        } catch (error) {
+          console.log("Error while creating payments:", error);
+        }
       }
     }
   );
@@ -59,6 +103,21 @@ FeeType.update = (id, updatedData, result) => {
       result(null, { id: id, ...updatedData });
     }
   );
+};
+
+FeeType.findById = (id, result) => {
+  sql.query(`SELECT * FROM ${tableName} WHERE id = ?`, id, (err, res) => {
+    if (err) {
+      console.log("Error while querying:", err);
+      result(err, null);
+      return;
+    }
+    if (res.length) {
+      result(null, res[0]);
+      return;
+    }
+    result({ type: "not_found" }, null);
+  });
 };
 
 export default FeeType;
