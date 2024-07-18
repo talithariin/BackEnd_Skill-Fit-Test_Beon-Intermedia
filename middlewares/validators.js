@@ -51,3 +51,27 @@ export const validateHouseResidentSchema = async (req, res, next) => {
     res.status(400).json({ errors: error.errors });
   }
 };
+
+export const feeTypeSchema = yup.object().shape({
+  name: yup.string().required("Name of Fee Type is required"),
+  amount: yup
+    .number()
+    .integer("Amount must be a number")
+    .required("Amount is required"),
+  frequency: yup
+    .string()
+    .oneOf(
+      ["once", "monthly", "yearly"],
+      "Frequency must be one of: once, monthly, yearly"
+    )
+    .required("Frequency is required"),
+});
+
+export const validateFeeTypeSchema = async (req, res, next) => {
+  try {
+    await feeTypeSchema.validate(req.body, { abortEarly: false });
+    next();
+  } catch (error) {
+    res.status(400).json({ errors: error.errors });
+  }
+};

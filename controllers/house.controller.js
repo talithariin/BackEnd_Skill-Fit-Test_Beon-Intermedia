@@ -16,13 +16,14 @@ export const create = (req, res, next) => {
   });
 };
 
-export const getAll = (res, next) => {
+export const getAll = (req, res, next) => {
   House.getAll((err, data) => {
     if (err) {
       console.log(err);
       next(new Error("internal_error"));
+    } else {
+      res.send(data);
     }
-    res.send(data);
   });
 };
 

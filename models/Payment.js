@@ -8,4 +8,25 @@ const Payment = function (payment) {
   this.status = payment.status;
 };
 
+Payment.create = (newPayment, result) => {
+  const { resident_id, fee_type_id, payment_date, period, status } = newPayment;
+  console.log("Data to be entered:", newPayment);
+
+  sql.query(
+    `INSERT INTO ${tableName} (resident_id, fee_type_id, payment_date, period, status) VALUES (?, ?, ?)`,
+    [resident_id, fee_type_id, payment_date, period, status],
+    (err, res) => {
+      if (err) {
+        console.log("Error while querying:", err);
+        result(err, null);
+      } else {
+        console.log("Data is successfully entered:", res);
+        result(null, { id: res.insertId, ...newPayment });
+      }
+    }
+  );
+};
+
 const tableName = "Payments";
+
+export default Payment;

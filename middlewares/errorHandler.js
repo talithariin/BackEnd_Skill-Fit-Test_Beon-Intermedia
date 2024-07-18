@@ -23,6 +23,10 @@ const errorHandler = (err, req, res, next) => {
       statusCode = 404;
       message = "There are no house resident with the requested id";
       break;
+    case "FeeType_Not_Found":
+      statusCode = 404;
+      message = "There are no fee type with the requested id";
+      break;
     default:
       statusCode = 500;
       message = "Internal server error";
