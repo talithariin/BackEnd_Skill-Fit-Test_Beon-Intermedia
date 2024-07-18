@@ -7,26 +7,12 @@ export const create = (req, res, next) => {
     total: req.body.total,
   });
 
-  // cek apakah income dengan fee_type_id sudah ada
-  Income.findByFeeTypeId(req.body.fee_type_id, (err, data) => {
-    if (err && err.type === "not_found") {
-      // jika tidak ada, set total = req.body.total
-      newIncome.total = req.body.total;
-    } else if (err) {
-      console.log(err);
+  Income.create(newIncome, (createErr, createData) => {
+    if (createErr) {
+      console.log(createErr);
       return next(new Error("internal_error"));
-    } else {
-      // jika ada, maka set total = data total sebelumnya + data total yg akan dimasukkan
-      newIncome.total = data[0].total + req.body.total;
     }
-
-    Income.create(newIncome, (createErr, createData) => {
-      if (createErr) {
-        console.log(createErr);
-        return next(new Error("internal_error"));
-      }
-      res.send(createData);
-    });
+    res.send(createData);
   });
 };
 

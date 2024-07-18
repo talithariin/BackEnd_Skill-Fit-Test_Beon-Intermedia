@@ -50,43 +50,51 @@ export const create = async (req, res, next) => {
     });
 
     // Create new payment record
-    Payment.create(newPayment, (err, paymentData) => {
+    Payment.create(newPayment, async (err, paymentData) => {
       if (err) {
         console.log(err);
         next(new Error("internal_error"));
       } else {
-        // Create new income record
-        const newIncome = new Income({
-          payment_id: paymentData.id,
-          fee_type_id: newPayment.fee_type_id,
-          total: newPayment.amount,
-        });
+        let totalIncome = parseFloat(newPayment.amount);
 
-        // Check if income with fee_type_id already exists
-        Income.findByFeeTypeId(
-          newIncome.fee_type_id,
-          (incomeErr, incomeData) => {
-            if (incomeErr && incomeErr.type === "not_found") {
-              // If not found, set total = newPayment.amount
-              newIncome.total = newPayment.amount;
-            } else if (incomeErr) {
-              console.log(incomeErr);
-              return next(new Error("internal_error"));
-            } else {
-              // If found, add existing total to new total
-              newIncome.total = incomeData[0].total + newPayment.amount;
-            }
-
-            // Create or update income record
-            Income.create(newIncome, (createErr, createData) => {
-              if (createErr) {
-                console.log(createErr);
-                return next(new Error("internal_error"));
+        try {
+          // Fetch the latest total income
+          const latestIncome = await new Promise((resolve, reject) => {
+            Income.findLatestTotal((incomeErr, data) => {
+              if (incomeErr && incomeErr.type === "not_found") {
+                resolve(0); // No existing income found, return 0
+              } else if (incomeErr) {
+                reject(incomeErr);
+              } else {
+                resolve(data); // Latest income found
               }
-              res.send({ payment: paymentData, income: createData });
             });
+          });
+
+          if (latestIncome !== null && latestIncome !== undefined) {
+            totalIncome += parseFloat(latestIncome.total || 0); // Access total safely
           }
-        );
+
+          console.log(`latest income ${latestIncome}`);
+
+          const newIncome = new Income({
+            payment_id: paymentData.id,
+            fee_type_id: newPayment.fee_type_id,
+            total: totalIncome,
+          });
+
+          // Create new income record
+          Income.create(newIncome, (createErr, createData) => {
+            if (createErr) {
+              console.log(createErr);
+              return next(new Error("internal_error"));
+            }
+            res.send({ payment: paymentData, income: createData });
+          });
+        } catch (error) {
+          console.log(error);
+          return next(new Error("internal_error"));
+        }
       }
     });
   } catch (error) {

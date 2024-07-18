@@ -25,6 +25,7 @@ app.use("/house-resident", houseResidentRoute);
 app.use("/fee", feeTypeRoute);
 app.use("/payment", paymentRoute);
 app.use("/income", incomeRoute);
+app.use("/expense", expenseRoute);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
