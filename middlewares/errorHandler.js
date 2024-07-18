@@ -3,6 +3,10 @@ const errorHandler = (err, req, res, next) => {
   let message;
   console.log(err.message);
   switch (err.message) {
+    case "No_Data_Provided":
+      statusCode = 400;
+      message = "No data provided for update";
+      break;
     case "Error_Disini_Woy":
       statusCode = 404;
       message = "Error disini woy";
@@ -14,6 +18,10 @@ const errorHandler = (err, req, res, next) => {
     case "House_Not_Found":
       statusCode = 404;
       message = "There are no house with the requested id";
+      break;
+    case "HouseResident_Not_Found":
+      statusCode = 404;
+      message = "There are no house resident with the requested id";
       break;
     default:
       statusCode = 500;
