@@ -24,13 +24,15 @@ export const create = async (req, res, next) => {
 
     // Check if resident_id exists
     const residentExists = await new Promise((resolve, reject) => {
-      Resident.findById(newHouseResident.resident_id, (err, data) => {
-        if (err || !data) {
-          reject(new Error("Resident_Not_Found"));
-        } else {
-          resolve(data);
-        }
-      });
+      Resident.findById(newHouseResident.resident_id)
+        .then((data) => {
+          if (!data) {
+            reject(new Error("Resident_Not_Found"));
+          } else {
+            resolve(data);
+          }
+        })
+        .catch((err) => reject(err));
     });
 
     // If both exist, create the HouseResident record
@@ -65,14 +67,23 @@ export const update = async (req, res, next) => {
   }
 
   try {
-    // Check if house_id exists
     if (updatedData.house_id) {
-      const houseExists = await new Promise((resolve, reject) => {
-        House.findById(updatedData.house_id, (err, data) => {
-          if (err) {
+      await new Promise((resolve, reject) => {
+        House.findById(updatedData.house_id, (err, houseData) => {
+          if (err || !houseData) {
             reject(new Error("House_Not_Found"));
           } else {
-            resolve(data);
+            const houseUpdateData = {
+              resident_id: updatedData.resident_id,
+              status: "occupied",
+            };
+            House.update(updatedData.house_id, houseUpdateData, (err, data) => {
+              if (err) {
+                reject(new Error("internal_error"));
+              } else {
+                resolve(data);
+              }
+            });
           }
         });
       });
@@ -80,14 +91,16 @@ export const update = async (req, res, next) => {
 
     // Check if resident_id exists
     if (updatedData.resident_id) {
-      const residentExists = await new Promise((resolve, reject) => {
-        Resident.findById(updatedData.resident_id, (err, data) => {
-          if (err) {
-            reject(new Error("Resident_Not_Found"));
-          } else {
-            resolve(data);
-          }
-        });
+      await new Promise((resolve, reject) => {
+        Resident.findById(updatedData.resident_id)
+          .then((data) => {
+            if (!data) {
+              reject(new Error("Resident_Not_Found"));
+            } else {
+              resolve(data);
+            }
+          })
+          .catch((err) => reject(err));
       });
     }
 

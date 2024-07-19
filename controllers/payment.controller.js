@@ -13,6 +13,7 @@ export const create = async (req, res, next) => {
     period: req.body.period,
     status: req.body.status || "paid",
     amount: req.body.amount || "0",
+    description: req.body.description || null,
   });
 
   try {
@@ -28,15 +29,7 @@ export const create = async (req, res, next) => {
     });
 
     // Check if resident_id exists
-    await new Promise((resolve, reject) => {
-      Resident.findById(newPayment.resident_id, (err, data) => {
-        if (err || !data) {
-          reject(new Error("Resident_Not_Found"));
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    await Resident.findById(newPayment.resident_id);
 
     // Check if house_id exists
     await new Promise((resolve, reject) => {
@@ -49,52 +42,28 @@ export const create = async (req, res, next) => {
       });
     });
 
-    // Create new payment record
-    Payment.create(newPayment, async (err, paymentData) => {
+    // Create or update payment record
+    Payment.createOrUpdate(newPayment, (err, paymentData) => {
       if (err) {
         console.log(err);
         next(new Error("internal_error"));
       } else {
-        let totalIncome = parseFloat(newPayment.amount);
+        const paymentAmount = parseFloat(newPayment.amount);
 
-        try {
-          // Fetch the latest total income
-          const latestIncome = await new Promise((resolve, reject) => {
-            Income.findLatestTotal((incomeErr, data) => {
-              if (incomeErr && incomeErr.type === "not_found") {
-                resolve(0); // No existing income found, return 0
-              } else if (incomeErr) {
-                reject(incomeErr);
-              } else {
-                resolve(data); // Latest income found
-              }
-            });
-          });
+        const newIncome = new Income({
+          payment_id: paymentData.id,
+          fee_type_id: newPayment.fee_type_id,
+          total: paymentAmount,
+        });
 
-          if (latestIncome !== null && latestIncome !== undefined) {
-            totalIncome += parseFloat(latestIncome.total || 0); // Access total safely
+        // Create new income record
+        Income.create(newIncome, (createErr, createData) => {
+          if (createErr) {
+            console.log(createErr);
+            return next(new Error("internal_error"));
           }
-
-          console.log(`latest income ${latestIncome}`);
-
-          const newIncome = new Income({
-            payment_id: paymentData.id,
-            fee_type_id: newPayment.fee_type_id,
-            total: totalIncome,
-          });
-
-          // Create new income record
-          Income.create(newIncome, (createErr, createData) => {
-            if (createErr) {
-              console.log(createErr);
-              return next(new Error("internal_error"));
-            }
-            res.send({ payment: paymentData, income: createData });
-          });
-        } catch (error) {
-          console.log(error);
-          return next(new Error("internal_error"));
-        }
+          res.send({ payment: paymentData, income: createData });
+        });
       }
     });
   } catch (error) {
@@ -116,13 +85,52 @@ export const create = async (req, res, next) => {
   }
 };
 
-export const getAll = (req, res, next) => {
-  Payment.getAll((err, data) => {
-    if (err) {
-      console.log(err);
-      next(new Error("internal_error"));
-    } else {
-      res.send(data);
-    }
-  });
+export const getAll = async (req, res, next) => {
+  try {
+    const payments = await new Promise((resolve, reject) => {
+      Payment.getAll((err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+
+    const paymentsWithDetails = await Promise.all(
+      payments.map(async (payment) => {
+        const residentData = await Resident.findById(payment.resident_id);
+        const houseData = await new Promise((resolve, reject) => {
+          House.findById(payment.house_id, (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data);
+            }
+          });
+        });
+        const feeTypeData = await new Promise((resolve, reject) => {
+          FeeType.findById(payment.fee_type_id, (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data);
+            }
+          });
+        });
+
+        return {
+          ...payment,
+          resident_data: residentData,
+          house_data: houseData,
+          fee_type_data: feeTypeData,
+        };
+      })
+    );
+
+    res.send(paymentsWithDetails);
+  } catch (error) {
+    console.log("Error:", error);
+    next(new Error("internal_error"));
+  }
 };

@@ -27,9 +27,13 @@ const errorHandler = (err, req, res, next) => {
       statusCode = 404;
       message = "There are no fee type with the requested id";
       break;
+    case "internal_error":
+      statusCode = 404;
+      message = "Internal server error";
+      break;
     default:
       statusCode = 500;
-      message = "Internal server error";
+      message = "An unexpected error occurred";
       break;
   }
   return res.status(statusCode).json({

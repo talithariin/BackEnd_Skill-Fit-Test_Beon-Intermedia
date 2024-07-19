@@ -60,6 +60,10 @@ export const update = (req, res, next) => {
     return;
   }
 
+  if (updatedData.status === "unoccupied") {
+    updatedData.resident_id = null;
+  }
+
   House.update(req.params.id, updatedData, (err, data) => {
     if (err) {
       if (err.type === "not_found") {

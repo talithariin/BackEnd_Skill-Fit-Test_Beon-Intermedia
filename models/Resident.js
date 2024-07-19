@@ -47,22 +47,24 @@ Resident.getAll = (result) => {
   });
 };
 
-Resident.findById = (id, result) => {
-  sql.query(`SELECT * FROM ${tableName} WHERE id = ?`, id, (err, res) => {
-    if (err) {
-      console.log("Error while querying:", err);
-      result(err, null);
-      return;
-    }
-    if (res.length) {
-      const dataWithBase64KTP = {
-        ...res[0],
-        ktp: res[0].ktp ? Buffer.from(res[0].ktp).toString("base64") : null,
-      };
-      result(null, dataWithBase64KTP);
-      return;
-    }
-    result({ type: "not_found" }, null);
+Resident.findById = (id) => {
+  return new Promise((resolve, reject) => {
+    sql.query(`SELECT * FROM ${tableName} WHERE id = ?`, id, (err, res) => {
+      if (err) {
+        console.log("Error while querying:", err);
+        reject(err);
+        return;
+      }
+      if (res.length) {
+        const dataWithBase64KTP = {
+          ...res[0],
+          ktp: res[0].ktp ? Buffer.from(res[0].ktp).toString("base64") : null,
+        };
+        resolve(dataWithBase64KTP);
+      } else {
+        reject({ type: "not_found" });
+      }
+    });
   });
 };
 
@@ -86,6 +88,23 @@ Resident.update = (id, updatedData, result) => {
       result(null, { id: id, ...updatedData });
     }
   );
+};
+
+Resident.delete = (id) => {
+  return new Promise((resolve, reject) => {
+    sql.query(`DELETE FROM ${tableName} WHERE id = ?`, id, (err, res) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        reject({ type: "not_found" });
+      } else {
+        resolve({ message: "Resident deleted successfully" });
+      }
+    });
+  });
 };
 
 export default Resident;

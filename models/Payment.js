@@ -8,6 +8,7 @@ const Payment = function (payment) {
   this.period = payment.period;
   this.status = payment.status;
   this.amount = payment.amount;
+  this.description = payment.description;
 };
 const tableName = "Payments";
 
@@ -20,12 +21,22 @@ Payment.create = (newPayment, result) => {
     period,
     status,
     amount,
+    description,
   } = newPayment;
   console.log("Data to be entered:", newPayment);
 
   sql.query(
-    `INSERT INTO ${tableName} (resident_id, house_id, fee_type_id, payment_date, period, status, amount) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [resident_id, house_id, fee_type_id, payment_date, period, status, amount],
+    `INSERT INTO ${tableName} (resident_id, house_id, fee_type_id, payment_date, period, status, amount, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      resident_id,
+      house_id,
+      fee_type_id,
+      payment_date,
+      period,
+      status,
+      amount,
+      description,
+    ],
     (err, res) => {
       if (err) {
         console.log("Error while querying:", err);
@@ -48,6 +59,83 @@ Payment.getAll = (result) => {
       result(null, res);
     }
   });
+};
+
+Payment.createOrUpdate = (newPayment, result) => {
+  const {
+    resident_id,
+    house_id,
+    fee_type_id,
+    payment_date,
+    period,
+    status,
+    amount,
+    description,
+  } = newPayment;
+  console.log("Data to be entered or updated:", newPayment);
+
+  // Check if payment data already exists
+  sql.query(
+    `SELECT * FROM ${tableName} WHERE resident_id = ? AND fee_type_id = ?`,
+    [resident_id, fee_type_id],
+    (err, res) => {
+      if (err) {
+        console.log("Error while querying:", err);
+        result(err, null);
+        return;
+      }
+
+      if (res.length > 0) {
+        // Payment data exists, update it
+        const paymentId = res[0].id;
+        sql.query(
+          `UPDATE ${tableName} SET house_id = ?, payment_date = ?, period = ?, status = ?, amount = ?, description = ? WHERE id = ?`,
+          [
+            house_id,
+            payment_date,
+            period,
+            status,
+            amount,
+            description,
+            paymentId,
+          ],
+          (updateErr, updateRes) => {
+            if (updateErr) {
+              console.log("Error while updating:", updateErr);
+              result(updateErr, null);
+            } else {
+              console.log("Data updated successfully:", updateRes);
+              result(null, { id: paymentId, ...newPayment });
+            }
+          }
+        );
+      } else {
+        // Payment data doesn't exist, insert it
+        sql.query(
+          `INSERT INTO ${tableName} (resident_id, house_id, fee_type_id, payment_date, period, status, amount, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            resident_id,
+            house_id,
+            fee_type_id,
+            payment_date,
+            period,
+            status,
+            amount,
+            description,
+          ],
+          (insertErr, insertRes) => {
+            if (insertErr) {
+              console.log("Error while inserting:", insertErr);
+              result(insertErr, null);
+            } else {
+              console.log("Data inserted successfully:", insertRes);
+              result(null, { id: insertRes.insertId, ...newPayment });
+            }
+          }
+        );
+      }
+    }
+  );
 };
 
 export default Payment;

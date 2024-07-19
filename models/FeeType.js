@@ -39,7 +39,7 @@ FeeType.create = (newFeeType, result) => {
             );
           });
 
-          // Buat payment untuk setiap rumah yang occupied
+          // Buat atau perbarui payment untuk setiap rumah yang occupied
           const paymentPromises = houses.map((house) => {
             const newPayment = new Payment({
               resident_id: house.resident_id,
@@ -53,7 +53,7 @@ FeeType.create = (newFeeType, result) => {
             });
 
             return new Promise((resolve, reject) => {
-              Payment.create(newPayment, (err, payment) => {
+              Payment.createOrUpdate(newPayment, (err, payment) => {
                 if (err) {
                   reject(err);
                 } else {
@@ -64,21 +64,21 @@ FeeType.create = (newFeeType, result) => {
           });
           await Promise.all(paymentPromises);
         } catch (error) {
-          console.log("Error while creating payments:", error);
+          console.log("Error while creating or updating payments:", error);
         }
       }
     }
   );
 };
 
-FeeType.getAll = (result) => {
+FeeType.getAll = (callback) => {
   sql.query(`SELECT * FROM ${tableName}`, (err, res) => {
     if (err) {
       console.log("Error while querying:", err);
-      result(err, null);
+      callback(err, null);
     } else {
       console.log("Data retrieved successfully:", res);
-      result(null, res);
+      callback(null, res);
     }
   });
 };
@@ -105,18 +105,18 @@ FeeType.update = (id, updatedData, result) => {
   );
 };
 
-FeeType.findById = (id, result) => {
+FeeType.findById = (id, callback) => {
   sql.query(`SELECT * FROM ${tableName} WHERE id = ?`, id, (err, res) => {
     if (err) {
       console.log("Error while querying:", err);
-      result(err, null);
-      return;
+      callback(err, null);
+    } else {
+      if (res.length) {
+        callback(null, res[0]);
+      } else {
+        callback({ type: "not_found" }, null);
+      }
     }
-    if (res.length) {
-      result(null, res[0]);
-      return;
-    }
-    result({ type: "not_found" }, null);
   });
 };
 

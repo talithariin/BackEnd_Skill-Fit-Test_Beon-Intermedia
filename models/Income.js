@@ -12,40 +12,23 @@ Income.create = (newIncome, result) => {
   const { payment_id, fee_type_id, total } = newIncome;
   console.log("Data to be entered:", newIncome);
 
-  // Fetch the current total income
+  const values = [payment_id, fee_type_id, total];
   sql.query(
-    `SELECT SUM(total) as current_total FROM ${tableName}`,
-    (err, res) => {
-      if (err) {
-        console.log("Error while querying:", err);
-        result(err, null);
-        return;
+    `INSERT INTO ${tableName} (payment_id, fee_type_id, total) VALUES (?, ?, ?)`,
+    values,
+    (createErr, res) => {
+      if (createErr) {
+        console.log("Error while querying:", createErr);
+        result(createErr, null);
+      } else {
+        console.log("Data is successfully entered:", res);
+        result(null, {
+          id: res.insertId,
+          payment_id,
+          fee_type_id,
+          total: parseFloat(total),
+        });
       }
-
-      let updatedTotal = parseFloat(total);
-      if (res.length && res[0].current_total !== null) {
-        updatedTotal += parseFloat(res[0].current_total);
-      }
-
-      const values = [payment_id, fee_type_id, updatedTotal];
-      sql.query(
-        `INSERT INTO ${tableName} (payment_id, fee_type_id, total) VALUES (?, ?, ?)`,
-        values,
-        (createErr, res) => {
-          if (createErr) {
-            console.log("Error while querying:", createErr);
-            result(createErr, null);
-          } else {
-            console.log("Data is successfully entered:", res);
-            result(null, {
-              id: res.insertId,
-              payment_id,
-              fee_type_id,
-              total: updatedTotal,
-            });
-          }
-        }
-      );
     }
   );
 };
@@ -80,6 +63,24 @@ Income.findLatestTotal = (callback) => {
       }
 
       callback(null, res.length ? res[0].latest_total : 0);
+    }
+  );
+};
+
+Income.findMonthlyIncome = (month, year, result) => {
+  sql.query(
+    `SELECT COALESCE(SUM(i.total), 0) as monthly_income 
+     FROM ${tableName} i
+     JOIN Payments p ON i.payment_id = p.id
+     WHERE MONTH(p.payment_date) = ? AND YEAR(p.payment_date) = ?`,
+    [month, year],
+    (err, res) => {
+      if (err) {
+        console.log("Error while querying:", err);
+        result(err, null);
+        return;
+      }
+      result(null, res.length ? res[0].monthly_income : 0);
     }
   );
 };

@@ -27,4 +27,33 @@ Expense.create = (newExpense, result) => {
   );
 };
 
+Expense.getAll = (result) => {
+  sql.query(`SELECT * FROM ${tableName}`, (err, res) => {
+    if (err) {
+      console.log("Error while querying:", err);
+      result(err, null);
+    } else {
+      console.log("Data retrieved successfully:", res);
+      result(null, res);
+    }
+  });
+};
+
+Expense.findMonthlyExpense = (month, year, result) => {
+  sql.query(
+    `SELECT COALESCE(SUM(amount), 0) as monthly_expense 
+     FROM ${tableName}
+     WHERE MONTH(expense_date) = ? AND YEAR(expense_date) = ?`,
+    [month, year],
+    (err, res) => {
+      if (err) {
+        console.log("Error while querying:", err);
+        result(err, null);
+        return;
+      }
+      result(null, res.length ? res[0].monthly_expense : 0);
+    }
+  );
+};
+
 export default Expense;

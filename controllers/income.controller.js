@@ -40,6 +40,6 @@ export const findMonthlyIncome = (req, res, next) => {
       console.log(err);
       return next(new Error("internal_error"));
     }
-    res.send(data);
+    res.send({ monthly_income: data });
   });
 };

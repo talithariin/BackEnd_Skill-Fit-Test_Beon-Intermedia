@@ -64,7 +64,6 @@ export const findOne = (req, res, next) => {
         res.status(404).send({
           message: `Not found fee type with id : ${req.params.id}`,
         });
-        next(new Error("FeeType_Not_Found"));
       } else {
         next(new Error("internal_error"));
       }

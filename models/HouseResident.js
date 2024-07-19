@@ -24,22 +24,22 @@ HouseResident.create = (newHouseResident, result) => {
       if (err) {
         console.log("Error while querying:", err);
         result(err, null);
-      } else {
-        console.log("Data is successfully entered:", res);
-
-        const updateQuery = `UPDATE Houses SET resident_id = ?, status = 'occupied' WHERE id = ?`;
-        const updateValues = [resident_id, house_id];
-
-        sql.query(updateQuery, updateValues, (updateErr, updateRes) => {
-          if (updateErr) {
-            console.log("Error while updating Houses:", updateErr);
-            result(updateErr, null);
-          } else {
-            console.log("Houses table updated successfully:", updateRes);
-            result(null, { id: res.insertId, ...newHouseResident });
-          }
-        });
+        return;
       }
+      console.log("Data is successfully entered:", res);
+
+      const updateQuery = `UPDATE Houses SET resident_id = ?, status = 'occupied' WHERE id = ?`;
+      const updateValues = [resident_id, house_id];
+
+      sql.query(updateQuery, updateValues, (updateErr, updateRes) => {
+        if (updateErr) {
+          console.log("Error while updating Houses:", updateErr);
+          result(updateErr, null);
+          return;
+        }
+        console.log("Houses table updated successfully:", updateRes);
+        result(null, { id: res.insertId, ...newHouseResident });
+      });
     }
   );
 };
@@ -60,7 +60,7 @@ HouseResident.update = (id, updatedData, result) => {
         return;
       }
 
-      console.log("House updated successfully");
+      console.log("HouseResident updated successfully");
       result(null, { id: id, ...updatedData });
     }
   );
@@ -84,18 +84,14 @@ HouseResident.findByHouseId = (houseId, result) => {
               const houseData = await new Promise((resolve, reject) => {
                 House.findById(houseResident.house_id, (errHouse, data) => {
                   if (errHouse) reject(errHouse);
-                  resolve(data);
+                  else resolve(data);
                 });
               });
 
               const residentData = await new Promise((resolve, reject) => {
-                Resident.findById(
-                  houseResident.resident_id,
-                  (errResident, data) => {
-                    if (errResident) reject(errResident);
-                    resolve(data);
-                  }
-                );
+                Resident.findById(houseResident.resident_id)
+                  .then((data) => resolve(data))
+                  .catch((errResident) => reject(errResident));
               });
 
               return {
@@ -115,12 +111,12 @@ HouseResident.findByHouseId = (houseId, result) => {
           console.log("Error while fetching house or resident data:", error);
           result(error, null);
         }
-        return;
+      } else {
+        result(
+          { type: "not_found", message: `Not found house with id ${houseId}` },
+          null
+        );
       }
-      result(
-        { type: "not_found", message: `Not found house with id ${houseId}` },
-        null
-      );
     }
   );
 };

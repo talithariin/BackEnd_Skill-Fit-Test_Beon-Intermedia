@@ -29,21 +29,19 @@ export const getAll = (req, res, next) => {
   });
 };
 
-export const findOne = (req, res, next) => {
-  Resident.findById(req.params.id, (err, data) => {
-    if (err) {
-      if (err.type === "not_found") {
-        res.status(404).send({
-          message: `Not found resident with id : ${req.params.id}`,
-        });
-        next(new Error("Resident_Not_Found"));
-      } else {
-        next(new Error("internal_error"));
-      }
+export const findOne = async (req, res, next) => {
+  try {
+    const data = await Resident.findById(req.params.id);
+    res.send(data);
+  } catch (err) {
+    if (err.type === "not_found") {
+      return res.status(404).send({
+        message: `Not found resident with id : ${req.params.id}`,
+      });
     } else {
-      res.send(data);
+      next(new Error("internal_error"));
     }
-  });
+  }
 };
 
 export const update = (req, res, next) => {
@@ -76,4 +74,29 @@ export const update = (req, res, next) => {
       res.send(data);
     }
   });
+};
+
+export const destroy = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const resident = await Resident.findById(id);
+    if (!resident) {
+      return res.status(404).send({
+        message: `Not found resident with id : ${id}`,
+      });
+    }
+
+    await Resident.delete(id);
+
+    res.status(200).send({ message: "Resident deleted successfully" });
+  } catch (error) {
+    if (error.type === "not_found") {
+      res.status(404).send({
+        message: `Not found resident with id : ${req.params.id}`,
+      });
+    } else {
+      next(new Error("internal_error"));
+    }
+  }
 };

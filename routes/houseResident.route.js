@@ -10,6 +10,6 @@ const houseResidentRoute = Router();
 
 houseResidentRoute.post("/", validateHouseResidentSchema, create);
 houseResidentRoute.get("/:houseId", findByHouseId);
-houseResidentRoute.put("/:id", update);
+houseResidentRoute.put("/:id", validateHouseResidentSchema, update);
 
 export default houseResidentRoute;
