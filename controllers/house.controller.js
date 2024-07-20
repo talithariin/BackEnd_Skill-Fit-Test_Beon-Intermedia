@@ -1,4 +1,5 @@
 import House from "../models/House.js";
+import Resident from "../models/Resident.js";
 
 export const create = (req, res, next) => {
   const newHouse = new House({
@@ -16,15 +17,48 @@ export const create = (req, res, next) => {
   });
 };
 
-export const getAll = (req, res, next) => {
-  House.getAll((err, data) => {
-    if (err) {
-      console.log(err);
-      next(new Error("internal_error"));
-    } else {
-      res.send(data);
-    }
-  });
+export const getAll = async (req, res, next) => {
+  try {
+    const data = await new Promise((resolve, reject) => {
+      House.getAll((err, data) => {
+        if (err) {
+          console.log(err);
+          reject(new Error("internal_error"));
+        } else {
+          resolve(data);
+        }
+      });
+    });
+
+    // Ambil data resident dan gabungkan dengan data house
+    const result = await Promise.all(
+      data.map(async (house) => {
+        if (house.status === "occupied" && house.resident_id) {
+          try {
+            const resident = await Resident.findById(house.resident_id);
+            // Hanya ambil field yang diperlukan dari residentData
+            const filteredResidentData = {
+              fullname: resident.fullname,
+              phone: resident.phone,
+              status: resident.status,
+            };
+            return { ...house, residentData: filteredResidentData };
+          } catch (err) {
+            // Jika tidak ditemukan atau terjadi error pada resident
+            console.error("Error finding resident:", err);
+            return { ...house, residentData: null };
+          }
+        } else {
+          // Jika status 'unoccupied' atau resident_id null, set residentData ke null
+          return { ...house, residentData: null };
+        }
+      })
+    );
+
+    res.send(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const findOne = (req, res, next) => {

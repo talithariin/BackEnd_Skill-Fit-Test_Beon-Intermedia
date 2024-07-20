@@ -11,7 +11,7 @@ export const create = async (req, res, next) => {
   });
 
   try {
-    // Check if house_id exists
+    // Step 1: Check if house_id exists and get current status
     const houseExists = await new Promise((resolve, reject) => {
       House.findById(newHouseResident.house_id, (err, data) => {
         if (err || !data) {
@@ -22,20 +22,29 @@ export const create = async (req, res, next) => {
       });
     });
 
-    // Check if resident_id exists
-    const residentExists = await new Promise((resolve, reject) => {
-      Resident.findById(newHouseResident.resident_id)
-        .then((data) => {
-          if (!data) {
-            reject(new Error("Resident_Not_Found"));
-          } else {
-            resolve(data);
-          }
-        })
-        .catch((err) => reject(err));
-    });
+    // Step 2: Check if resident_id exists
+    const residentExists = await Resident.findById(
+      newHouseResident.resident_id
+    );
 
-    // If both exist, create the HouseResident record
+    // Step 3: If house is occupied, update it to unoccupied and remove resident_id
+    if (houseExists.status === "occupied" && houseExists.resident_id) {
+      await new Promise((resolve, reject) => {
+        House.update(
+          newHouseResident.house_id,
+          { status: "unoccupied", resident_id: null },
+          (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data);
+            }
+          }
+        );
+      });
+    }
+
+    // Step 4: Create the HouseResident record
     HouseResident.create(newHouseResident, (err, data) => {
       if (err) {
         console.log(err);
@@ -47,6 +56,17 @@ export const create = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const getAll = (req, res, next) => {
+  HouseResident.getAll((err, data) => {
+    if (err) {
+      console.log(err);
+      next(new Error("internal_error"));
+    } else {
+      res.send(data);
+    }
+  });
 };
 
 export const update = async (req, res, next) => {

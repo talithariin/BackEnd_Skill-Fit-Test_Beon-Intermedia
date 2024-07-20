@@ -44,6 +44,18 @@ HouseResident.create = (newHouseResident, result) => {
   );
 };
 
+HouseResident.getAll = (callback) => {
+  sql.query(`SELECT * FROM ${tableName}`, (err, res) => {
+    if (err) {
+      console.log("Error while querying:", err);
+      callback(err, null);
+    } else {
+      console.log("Data retrieved successfully:", res);
+      callback(null, res);
+    }
+  });
+};
+
 HouseResident.update = (id, updatedData, result) => {
   sql.query(
     `UPDATE ${tableName} SET ? WHERE id = ?`,

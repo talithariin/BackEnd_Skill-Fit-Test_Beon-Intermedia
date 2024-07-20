@@ -1,4 +1,5 @@
 import sql from "./connection.js";
+import Resident from "./Resident.js";
 
 const House = function (house) {
   this.resident_id = house.resident_id;
@@ -33,14 +34,14 @@ House.create = (newHouse, result) => {
   );
 };
 
-House.getAll = (result) => {
+House.getAll = (callback) => {
   sql.query(`SELECT * FROM ${tableName}`, (err, res) => {
     if (err) {
       console.log("Error while querying:", err);
-      result(err, null);
+      callback(err, null);
     } else {
       console.log("Data retrieved successfully:", res);
-      result(null, res);
+      callback(null, res);
     }
   });
 };

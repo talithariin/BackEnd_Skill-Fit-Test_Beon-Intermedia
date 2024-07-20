@@ -9,9 +9,18 @@ import paymentRoute from "./routes/payment.route.js";
 import incomeRoute from "./routes/income.route.js";
 import expenseRoute from "./routes/expense.route.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import cors from "cors";
 
 const app = express();
 dotenv.config();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
