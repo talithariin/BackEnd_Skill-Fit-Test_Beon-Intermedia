@@ -1,4 +1,7 @@
 import Income from "../models/Income.js";
+import Payment from "../models/Payment.js";
+import FeeType from "../models/FeeType.js";
+import Resident from "../models/Resident.js";
 
 export const create = (req, res, next) => {
   const newIncome = new Income({
@@ -41,5 +44,52 @@ export const findMonthlyIncome = (req, res, next) => {
       return next(new Error("internal_error"));
     }
     res.send({ monthly_income: data });
+  });
+};
+
+export const getAll = (req, res, next) => {
+  Income.getAll(async (err, data) => {
+    if (err) {
+      console.log(err);
+      next(new Error("internal_error"));
+    } else {
+      try {
+        const dataWithDetails = await Promise.all(
+          data.map(async (income) => {
+            const paymentData = await new Promise((resolve, reject) => {
+              Payment.findById(income.payment_id, (err, payment) => {
+                if (err) reject(err);
+                else resolve(payment);
+              });
+            });
+
+            const feeTypeData = await new Promise((resolve, reject) => {
+              FeeType.findById(income.fee_type_id, (err, feeType) => {
+                if (err) reject(err);
+                else resolve(feeType);
+              });
+            });
+
+            const residentData = await new Promise((resolve, reject) => {
+              Resident.findById(paymentData.resident_id)
+                .then((data) => resolve(data))
+                .catch((errResident) => reject(errResident));
+            });
+
+            return {
+              ...income,
+              paymentData,
+              feeTypeData,
+              resident_fullname: residentData.fullname,
+            };
+          })
+        );
+
+        res.send(dataWithDetails);
+      } catch (error) {
+        console.log("Error while fetching related data:", error);
+        next(new Error("internal_error"));
+      }
+    }
   });
 };

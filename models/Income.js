@@ -85,4 +85,16 @@ Income.findMonthlyIncome = (month, year, result) => {
   );
 };
 
+Income.getAll = (result) => {
+  sql.query(`SELECT * FROM ${tableName}`, (err, res) => {
+    if (err) {
+      console.log("Error while querying:", err);
+      result(err, null);
+    } else {
+      console.log("Data retrieved successfully:", res);
+      result(null, res);
+    }
+  });
+};
+
 export default Income;

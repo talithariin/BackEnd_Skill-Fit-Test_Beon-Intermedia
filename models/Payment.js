@@ -138,4 +138,41 @@ Payment.createOrUpdate = (newPayment, result) => {
   );
 };
 
+Payment.update = (id, updatedData, result) => {
+  sql.query(
+    `UPDATE ${tableName} SET ? WHERE id = ?`,
+    [updatedData, id],
+    (err, res) => {
+      if (err) {
+        console.log("Error while updating:", err);
+        result(err, null);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        result({ type: "not_found" }, null);
+        return;
+      }
+
+      console.log("Payment updated successfully");
+      result(null, { id: id, ...updatedData });
+    }
+  );
+};
+
+Payment.findById = (id, result) => {
+  sql.query(`SELECT * FROM ${tableName} WHERE id = ?`, id, (err, res) => {
+    if (err) {
+      console.log("Error while querying:", err);
+      result(err, null);
+      return;
+    }
+    if (res.length) {
+      result(null, res[0]);
+      return;
+    }
+    result({ type: "not_found" }, null);
+  });
+};
+
 export default Payment;

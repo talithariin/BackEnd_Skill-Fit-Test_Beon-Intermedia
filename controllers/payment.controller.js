@@ -99,7 +99,14 @@ export const getAll = async (req, res, next) => {
 
     const paymentsWithDetails = await Promise.all(
       payments.map(async (payment) => {
-        const residentData = await Resident.findById(payment.resident_id);
+        const resident = await Resident.findById(payment.resident_id);
+        const residentData = {
+          fullname: resident.fullname,
+          phone: resident.phone,
+          status: resident.status,
+          marital_status: resident.marital_status,
+        };
+
         const houseData = await new Promise((resolve, reject) => {
           House.findById(payment.house_id, (err, data) => {
             if (err) {
@@ -133,4 +140,39 @@ export const getAll = async (req, res, next) => {
     console.log("Error:", error);
     next(new Error("internal_error"));
   }
+};
+
+export const update = (req, res, next) => {
+  const updatedData = {
+    house_id: req.body.house_id,
+    resident_id: req.body.resident_id,
+    fee_type_id: req.body.fee_type_id,
+    status: req.body.status ? req.body.status : "paid",
+    payment_date: req.body.payment_date,
+    period: req.body.period,
+    amount: req.body.amount,
+    description: req.body.description ? req.body.description : null,
+  };
+
+  Object.keys(updatedData).forEach(
+    (key) => updatedData[key] === undefined && delete updatedData[key]
+  );
+
+  if (Object.keys(updatedData).length === 0) {
+    next(new Error("No_Data_Provided"));
+    return;
+  }
+
+  Payment.update(req.params.id, updatedData, (err, data) => {
+    if (err) {
+      if (err.type === "not_found") {
+        next(new Error("House_Not_Found"));
+      } else {
+        console.log(err);
+        next(new Error("internal_error"));
+      }
+    } else {
+      res.send(data);
+    }
+  });
 };

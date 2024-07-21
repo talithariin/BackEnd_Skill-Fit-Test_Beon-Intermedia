@@ -44,14 +44,14 @@ HouseResident.create = (newHouseResident, result) => {
   );
 };
 
-HouseResident.getAll = (callback) => {
+HouseResident.getAll = (result) => {
   sql.query(`SELECT * FROM ${tableName}`, (err, res) => {
     if (err) {
       console.log("Error while querying:", err);
-      callback(err, null);
+      result(err, null);
     } else {
       console.log("Data retrieved successfully:", res);
-      callback(null, res);
+      result(null, res);
     }
   });
 };
@@ -129,6 +129,53 @@ HouseResident.findByHouseId = (houseId, result) => {
           null
         );
       }
+    }
+  );
+};
+
+// Find the most recent HouseResident record by house_id and resident_id
+HouseResident.findMostRecentByHouseAndResident = (
+  house_id,
+  resident_id,
+  result
+) => {
+  sql.query(
+    `SELECT * FROM ${tableName} WHERE house_id = ? AND resident_id = ? ORDER BY startdate DESC LIMIT 1`,
+    [house_id, resident_id],
+    (err, res) => {
+      if (err) {
+        console.log("Error while querying:", err);
+        result(err, null);
+        return;
+      }
+      if (res.length) {
+        result(null, res[0]);
+        return;
+      }
+      result({ type: "not_found" }, null);
+    }
+  );
+};
+
+// Update the enddate of a HouseResident record
+HouseResident.updateEndDate = (id, enddate, result) => {
+  sql.query(
+    `UPDATE ${tableName} SET enddate = ? WHERE id = ?`,
+    [enddate, id],
+    (err, res) => {
+      if (err) {
+        console.log("Error while updating:", err);
+        result(err, null);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        result({ type: "not_found" }, null);
+        return;
+      }
+
+      console.log("House Resident enddate updated successfully");
+      result(null, { id: id, enddate: enddate });
     }
   );
 };

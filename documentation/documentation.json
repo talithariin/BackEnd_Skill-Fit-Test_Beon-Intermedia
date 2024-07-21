@@ -1,0 +1,828 @@
+{
+	"info": {
+		"_postman_id": "7303d93f-ab3d-4e2d-ace9-0e0e291e125a",
+		"name": "PT Beon Intermedia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35970880"
+	},
+	"item": [
+		{
+			"name": "Resident",
+			"item": [
+				{
+					"name": "Get All Resident",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/resident/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"resident",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Resident",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fullname",
+									"value": "James Well",
+									"type": "text"
+								},
+								{
+									"key": "ktp",
+									"type": "file",
+									"src": "/Users/talithaarini/Downloads/c48129d4f52fedecae06b9aeacf3cd8f.jpg",
+									"disabled": true
+								},
+								{
+									"key": "phone",
+									"value": "081928383289",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "contract",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "marital_status",
+									"value": "married",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/resident/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"resident",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By Id Resident",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/resident/5",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"resident",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Resident",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fullname",
+									"value": "James Cook",
+									"type": "text"
+								},
+								{
+									"key": "ktp",
+									"type": "file",
+									"src": "/Users/talithaarini/Downloads/c48129d4f52fedecae06b9aeacf3cd8f.jpg"
+								},
+								{
+									"key": "phone",
+									"value": "03415025004",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "permanent",
+									"type": "text"
+								},
+								{
+									"key": "marital_status",
+									"value": "married",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/resident/5",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"resident",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Resident",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/resident/5",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"resident",
+								"5"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "# Resident\n\nPak RT dapat menambahkan, mengubah, dan menghapus data penghuni pada endpoint Resident. Di dalamnya terdapat:\n\n- Fullname: Nama lengkap penghuni (wajib diisi)\n- KTP: Foto KTP penghuni\n- Phone: Nomor handphone penghuni (wajib diisi)\n- Status: Status penghuni yaitu kontrak atau penghuni tetap atau permanen\n    \n- Marital Status: Status penghuni yaitu sudah menikah atau belum menikah\n    \n\nData selain data yang wajib diisi, dapat dilengkapi dengan cara mengubah data resident."
+		},
+		{
+			"name": "House",
+			"item": [
+				{
+					"name": "Get All House",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/house/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"house",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create House",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "resident_id",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "occupied",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "address",
+									"value": "Jl. Tata Surya No. 4, Kota Malang",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/house/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"house",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By House Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/house/4",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"house",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit House By Id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "address",
+									"value": "Jl. Tata Surya No.48, Kota Malang",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "occupied",
+									"type": "text"
+								},
+								{
+									"key": "resident_id",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/house/4",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"house",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "# House\n\nDalam endpoint ini, Pak RT dapat mendapatkan semua data rumah, menambahkan rumah, dan mengubah data rumah. Di dalamnya terdapat:\n\n- Resident ID: id dari penghuni atau pemilik rumah (jika ada)\n    \n- Status: status dari rumah yaitu ditempati atau tidak ditempati\n- Address: alamat rumah (wajib ada)\n    \n\nAda ketentuan ketika melakukan CRUD:\n\n- Ketika melakukan Create, informasi yang diperlukan hanya address. Default dari status adalah unoccupied dan resident bisa bernilai null\n    \n- Pak RT dapat melakukan update dengan mengirimkan data yang ingin diubah saja. Tetapi ketika status nya diubah menjadi unoccupied, maka resident_id pada tabel House akan di set null"
+		},
+		{
+			"name": "House Resident",
+			"item": [
+				{
+					"name": "Create House Resident",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "house_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "resident_id",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "startdate",
+									"value": "2025-01-01",
+									"type": "text"
+								},
+								{
+									"key": "enddate",
+									"value": "2028-07-21",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/house-resident/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"house-resident",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By House Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/house-resident/2",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"house-resident",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit House Resident by Id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "house_id",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "resident_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "startdate",
+									"value": "2014-07-19",
+									"type": "text"
+								},
+								{
+									"key": "enddate",
+									"value": "2019-12-31",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/house-resident/7",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"house-resident",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All House Resident",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/house-resident/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"house-resident",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "# House Resident\n\nDalam endpoint ini, Pak RT dapat mendapatkan history penghuni dalam rumah tertentu, menambahkan penghuni baru ke dalam rumah tertentu dan mengubah data tersebut. Di dalamnya terdapat:\n\n- House ID: id dari rumah (wajib)\n- Resident ID: id dari penghuni rumah (wajib)\n- Start Date: Tanggal mulai penghuni tinggal di rumah tersebut (wajib)\n- End Date: Tanggal berakhir penghuni tinggal di rumah tersebut\n    \n\nSelain itu, ketika mengupdate data, Pak RT bisa mengirimkan data yang ingin diubah saja. Ketika mengupdate data, sudah terdapat handle error ketika house resident, house_id, dan resident_id yang dimaksud tidak ditemukan. Ketika Pak RT menambahkan data house resident, maka otomatis pada tabel Houses, resident_id dan status nya berubah menjadi occupied.\n\nAda ketentuan ketika melakukan CRUD:\n\n- Untuk create dan update sudah ada handle error untuk mengecek apakah house_id dan resident_id yang digunakan benar ada datanya.\n- Create: Ketika Pak RT menambahkan data house resident, maka juga akan mengubah data dalam tabel Houses pada bagian resident_id dan statusnya menjadi occupied\n    \n- Ketika Pak RT membuat data house resident baru, yang mana dalam data rumah tersebut sudah ada yang menghuni, maka data penghuni sebelumnya akan diganti dengan data yang baru dalam tabel Houses. Sedangkan dalam tabel HouseResident, data yang lama akan tetap ada dan ditambahkan dengan data yang baru. Hal ini untuk menyimpan history penghuni.\n    \n- Update: ketika mengupdate data, Pak RT dapat mengirimkan data yang ingin diubah saja.\n- Pada findByHouseId akan menghasilkan data yang lengkap beserta data resident dari tabel Resident dan house dari tabel House"
+		},
+		{
+			"name": "Fee Type",
+			"item": [
+				{
+					"name": "Get All Fee Type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/fee/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"fee",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Make New Fee Type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Karnaval",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "50000",
+									"type": "text"
+								},
+								{
+									"key": "frequency",
+									"value": "yearly",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/fee",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"fee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Fee Type",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Pawai",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "25000",
+									"type": "text"
+								},
+								{
+									"key": "frequency",
+									"value": "once",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/fee/7",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"fee",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/fee/1",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"fee",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "# Fee Type\n\nDalam endpoint ini, Pak RT dapat membuat dan mengubah data pembayaran iuran. Di dalamnya terdapat:\n\n- Name: nama dari jenis iuran (wajib)\n- Amount: jumlah dari jenis iuran(wajib)\n- Frequency: frekuensi waktu yang harus dibayarkan, yaitu ada once, monthly, dan yearly (wajib)\n    \n\nBerikut ini beberapa ketentuan penggunaan CRUD:\n\n- Create: Ketika Pak RT membuat Fee Type baru, maka akan otomatis juga terbuat Payment dengan status unpaid untuk House yang statusnya occupied\n    \n- Update: Pak RT cukup menginputkan data yang memang ingin diubah saja"
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "Get All Payment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/payment/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"payment",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Make Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "fee_type_id",
+									"value": "7",
+									"type": "text"
+								},
+								{
+									"key": "resident_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "house_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "payment_date",
+									"value": "2024-07-18",
+									"type": "text"
+								},
+								{
+									"key": "period",
+									"value": "once",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "25000",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "kebersihan bulan juli",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/payment/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"payment",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Payment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "payment_date",
+									"value": "2024-07-21",
+									"type": "text"
+								},
+								{
+									"key": "period",
+									"value": "once",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "25000",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Bayar Pawai Muharram",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/payment/23",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"payment",
+								"23"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "# Payment\n\nDalam endpoint ini, Pak RT dapat membuat dan mengubah data pembayaran iuran. Di dalamnya terdapat:\n\n- House ID: id dari rumah (wajib)\n- Resident ID: id dari penghuni rumah (wajib)\n- Fee Type ID: id dari jenis iuran yang dibayarkan (wajib)\n- Status: status dari pembayaran, yaitu paid dan unpaid (wajib)\n- Payment Date: tanggal pembayaran (wajib)\n- Period: Periode untuk pembayaran iuran, ada once, monthly, dan yearly (wajib)\n- Amount: Berisi nominal jumlah iuran yang dibayarkan (wajib)\n- Description: Bisa diisi dengan keterangan untuk pembayaran bulan apa (nama bulan) atau yang lainnya\n    \n\nTerdapat ketentuan ketika melakukan CRUD:\n\n1. Selain melalui Fee Type, Pak RT dapat membuat Payment secara manual\n2. Create: sudah terdapat error handler ketika data house_id, resident_id, dan fee_type tidak ditemukan. Ketika Pak RT ingin menambahkan data Payment, padahal data Payment dengan resident_id dan fee_type_id sudah ada, maka akan otomatis melakukan update pada data yang sudah ada dan mengubah status nya menjadi paid. Saat berhasil menambahkan data Payment, otomatis amound dari payment tersebut akan masuk ke tabel Income."
+		},
+		{
+			"name": "Income",
+			"item": [
+				{
+					"name": "Find By Fee Type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/income/1",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"income",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Monthly Income",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/income/monthly/07/2024",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"income",
+								"monthly",
+								"07",
+								"2024"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Income",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/income",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"income"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "# Income\n\nDalam endpoint ini, Pak RT dapat mengambil informasi untuk pendapatan perbulan dan pendapatan berdasarkan jenis iuran.\n\nAda beberapa ketentuan CRUD:\n\n- Pak RT tidak dapat melakukan Create data Income secara direct. Create data hanya dilakukan ketika terdapat payment yang masuk\n    \n- Pak Rt hanya dapat melakukan method Get"
+		},
+		{
+			"name": "Expense",
+			"item": [
+				{
+					"name": "Make new Expense",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "description",
+									"value": "Fogging",
+									"type": "text"
+								},
+								{
+									"key": "expense_date",
+									"value": "2024-07-15",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "100000",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/expense/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"expense",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Expense",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/expense/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"expense",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Monthly Expense",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/expense/monthly/07/2024",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"expense",
+								"monthly",
+								"07",
+								"2024"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "# Expense\n\nDalam endpoint ini, Pak RT dapat membuat dan mendapatkan informasi data pengeluaran.\n\n- Description: Bisa diisi dengan keterangan pengeluaran (wajib diisi)\n- Expense date: tanggal pengeluaran (wajib diisi)\n- Amount: jumlah nominal pengeluaran (wajib diisi)"
+		},
+		{
+			"name": "Beranda",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -58,15 +58,51 @@ export const create = async (req, res, next) => {
   }
 };
 
-export const getAll = (req, res, next) => {
-  HouseResident.getAll((err, data) => {
-    if (err) {
-      console.log(err);
-      next(new Error("internal_error"));
-    } else {
-      res.send(data);
-    }
-  });
+export const getAll = async (req, res, next) => {
+  try {
+    const houseResidents = await new Promise((resolve, reject) => {
+      HouseResident.getAll((err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+
+    const results = await Promise.all(
+      houseResidents.map(async (item) => {
+        const houseData = await new Promise((resolve, reject) => {
+          House.findById(item.house_id, (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data);
+            }
+          });
+        });
+
+        const resident = await Resident.findById(item.resident_id);
+        const residentData = {
+          fullname: resident.fullname,
+          phone: resident.phone,
+          status: resident.status,
+          marital_status: resident.marital_status,
+        };
+
+        return {
+          ...item,
+          houseData,
+          residentData,
+        };
+      })
+    );
+
+    res.send(results);
+  } catch (err) {
+    console.log(err);
+    next(new Error("internal_error"));
+  }
 };
 
 export const update = async (req, res, next) => {

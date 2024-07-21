@@ -71,14 +71,14 @@ FeeType.create = (newFeeType, result) => {
   );
 };
 
-FeeType.getAll = (callback) => {
+FeeType.getAll = (result) => {
   sql.query(`SELECT * FROM ${tableName}`, (err, res) => {
     if (err) {
       console.log("Error while querying:", err);
-      callback(err, null);
+      result(err, null);
     } else {
       console.log("Data retrieved successfully:", res);
-      callback(null, res);
+      result(null, res);
     }
   });
 };
